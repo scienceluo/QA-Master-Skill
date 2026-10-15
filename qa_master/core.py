@@ -1,4 +1,4 @@
-"""QA Master v0.1: deterministic guardrails for AI-assisted testing.
+"""Deprecated Campaign compatibility API; installed CLI uses the application service.
 No external side effect is performed by this module.
 """
 from __future__ import annotations
@@ -32,6 +32,8 @@ class Campaign:
     questions: dict = field(default_factory=dict)
     history: list = field(default_factory=list)
     run_ids: list = field(default_factory=list)
+    task_contract: dict = field(default_factory=dict)
+    revision: int = 0
 
     def set_answer(self, key, value):
         if value is None or (isinstance(value,str) and value.strip().lower() in ('没有','无','none','no')):
@@ -82,6 +84,8 @@ class Campaign:
         return {'intent':ordered,'scope_limited':limited, 'skills':sorted({k for s in ordered for k in SKILLS.get(s,[])})}
 
     def next_action(self, intent):
+        if intent in ('execution','regression') and self.task_contract.get('no_execution') is True:
+            return {'state':'DENIED_BY_TASK_SCOPE','question':'Current task does not permit execution.'}
         if not self.has('requirements') and not self.has('gitlab') and not self.has('web_url'):
             return {'state':'NEEDS_INPUT','question':'请提供需求文档/Wiki、GitLab 仓库或已部署系统地址（任选一种）。'}
         if self.has('gitlab') and not self.has('requirements') and self.need_question('requirements'):
@@ -108,10 +112,10 @@ class Campaign:
         return {'pass':not issues,'issues':issues}
 
 def save(campaign,path):
-    path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
-    tmp=path.with_suffix(path.suffix+'.tmp')
-    tmp.write_text(json.dumps(asdict(campaign),ensure_ascii=False,indent=2),encoding='utf8')
-    tmp.replace(path)
+    from .state_store import save_document
+    persisted=save_document(path,asdict(campaign),expected_revision=campaign.revision)
+    campaign.revision=persisted['revision']
 
 def load(path):
-    return Campaign(**json.loads(Path(path).read_text(encoding='utf8')))
+    from .state_store import load_document
+    return Campaign(**load_document(path))

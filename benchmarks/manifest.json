@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "scenario_set_sha256": "e6f93c1b2e5bc86c9797f09243de64d15d0a090c8f48027151f70c1434f78226",
+  "measurement_status": "NOT_EXECUTED",
+  "claim_status": "NOT_ASSERTED",
+  "rubric_dimensions": ["factuality", "scope", "oracle", "traceability", "coverage"],
+  "participants": [
+    {
+      "participant_id": "qa-master",
+      "participant_version": "PENDING",
+      "responses": [
+        {"scenario_id":"SC-001","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-002","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-003","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-004","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-005","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-006","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-007","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-008","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-009","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-010","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-011","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-012","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"}
+      ]
+    },
+    {
+      "participant_id": "comparison-target",
+      "participant_version": "PENDING",
+      "responses": [
+        {"scenario_id":"SC-001","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-002","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-003","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-004","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-005","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-006","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-007","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-008","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-009","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-010","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-011","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"},{"scenario_id":"SC-012","status":"NOT_EXECUTED","behavioral_output":null,"rubric_status":"NOT_EXECUTED"}
+      ]
+    }
+  ]
+}

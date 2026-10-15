@@ -1,8 +1,35 @@
 import ast
 import unittest
+import types
+from unittest.mock import patch, Mock
 from qa_master.api_codegen import generate_pytest, validate_scenarios
 GOOD={"method":"GET","path":"/health","expected_statuses":[200],"approved":True}
 class ApiCodegenTests(unittest.TestCase):
+    def test_credentialed_http_never_sends_request(self):
+        fake_pytest=types.SimpleNamespace(mark=types.SimpleNamespace(parametrize=lambda *args:lambda f:f))
+        fake_requests=types.SimpleNamespace(request=Mock())
+        namespace={'__file__':'synthetic_generated_test.py'}
+        with patch.dict('sys.modules',{'pytest':fake_pytest,'requests':fake_requests}):
+            exec(compile(generate_pytest([GOOD]),'synthetic_generated_test.py','exec',optimize=1),namespace)
+        with patch.dict('os.environ',{'QA_EXECUTION_APPROVED':'YES','QA_TARGET_URL':'http://example.test','QA_API_TOKEN':'synthetic-only'},clear=True):
+            with self.assertRaisesRegex(PermissionError,'Credentials require HTTPS'):
+                namespace['test_approved_api_scenario'](namespace['SCENARIOS'][0],lambda binding:True)
+        fake_requests.request.assert_not_called()
+    def test_optimized_source_keeps_authorization_guards(self):
+        fake_pytest=types.SimpleNamespace(mark=types.SimpleNamespace(parametrize=lambda *args:lambda f:f))
+        fake_requests=types.SimpleNamespace(request=Mock())
+        for scenario,env,authorizer in (
+            (GOOD,{},lambda _:True),
+            (GOOD,{'QA_EXECUTION_APPROVED':'YES','QA_TARGET_URL':'https://example.test'},lambda _:False),
+            (dict(GOOD,method='POST',allow_mutation=True),{'QA_EXECUTION_APPROVED':'YES','QA_TARGET_URL':'https://example.test'},lambda _:True),
+        ):
+            namespace={'__file__':'synthetic_generated_test.py'}
+            with patch.dict('sys.modules',{'pytest':fake_pytest,'requests':fake_requests}):
+                exec(compile(generate_pytest([scenario]),'generated.py','exec',optimize=1),namespace)
+            with patch.dict('os.environ',env,clear=True):
+                with self.assertRaises(PermissionError):
+                    namespace['test_approved_api_scenario'](namespace['SCENARIOS'][0],authorizer)
+        fake_requests.request.assert_not_called()
     def test_valid(self):
         ast.parse(generate_pytest([GOOD]))
     def test_requires_execution_approval(self):

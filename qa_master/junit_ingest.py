@@ -7,15 +7,29 @@ import xml.etree.ElementTree as ET
 class JUnitImportError(ValueError):
     pass
 
+def _strict_xml_text(payload):
+    """Accept only Unicode encodings we can scan before XML parsing."""
+    try:
+        if payload.startswith((b'\xff\xfe\x00\x00', b'\x00\x00\xfe\xff')):
+            return payload.decode('utf-32')
+        if payload.startswith((b'\xff\xfe', b'\xfe\xff')):
+            return payload.decode('utf-16')
+        return payload.decode('utf-8-sig')
+    except UnicodeDecodeError as exc:
+        raise JUnitImportError('JUnit must use UTF-8, UTF-16, or UTF-32') from exc
+
 def ingest_junit(path, case_map, *, max_bytes=5_000_000):
     """case_map maps (classname,name) tuples to official IDs. Provenance remains unverified."""
     source=Path(path)
     if source.stat().st_size>max_bytes:raise JUnitImportError('JUnit file exceeds limit')
     payload=source.read_bytes()
-    if b'<!DOCTYPE' in payload.upper() or b'<!ENTITY' in payload.upper():
+    text=_strict_xml_text(payload)
+    if '<!DOCTYPE' in text.upper() or '<!ENTITY' in text.upper():
         raise JUnitImportError('DTD/entity declarations forbidden')
-    try:root=ET.fromstring(payload)
+    try:root=ET.fromstring(text)
     except ET.ParseError as exc:raise JUnitImportError('Malformed JUnit XML') from exc
+    if any(not isinstance(node.tag,str) or '}' in node.tag or ':' in node.tag for node in root.iter()):
+        raise JUnitImportError('Namespaces are not supported in JUnit XML')
     if root.tag not in ('testsuite','testsuites'):raise JUnitImportError('Unexpected XML root')
     nodes=root.findall('.//testcase')
     if not nodes:raise JUnitImportError('No testcases')

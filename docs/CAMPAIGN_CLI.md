@@ -23,7 +23,43 @@ The CLI reads one local JSON bundle of no more than 5 MB and writes a local JSON
 
 ## Tests
 
-An independent local run from the project workspace passed **151 tests** including eight CLI integration tests. The GitHub copy is independently provided; GitHub Actions needs to be verified separately for the latest commit. The local source and remote-published source were produced in this session; changes in one should not be assumed synchronized beyond the files just committed.
+Current independent execution records are in [verification](verification/).
+Each record names its source version and scope. Historical test totals are not
+evidence for a changed version.
+
+## Structured design methods
+
+For explicit finite domain/rule/state models, run:
+
+```bash
+python -m qa_master.campaign_cli --input examples/design-methods.json --output method-report.json
+```
+
+The example is illustrative input, not an approved requirements baseline.
+It expands exact Decimal boundaries, a finite decision table and an order-state
+model. The input must supply sources and expected-result references; the engine
+does not read source documents or infer their meaning. The complete schema is
+specified in [DES-033](04-design/DES-033-structured-test-design-methods.md).
+
+`method_design.candidates` contains the resulting draft cases, with their input
+values or assignments, source/oracle links, and `validation_action: NOT_EXECUTED`.
+`method_design.obligations` retains missing oracles, uncovered or conflicting
+rules, and unreachable transitions. `model_results` records the declared
+coverage denominator and method-specific analysis. A coverage ratio measures
+draft candidates against that finite model; it is not a test result or a quality
+score. The original generic `test_cases` remain separate and unchanged.
+
+Numeric models use explicit steps and exact arithmetic. Decimal values must be
+canonical strings, not JSON floats. Decision rules use the bounded data grammar
+in the design; no expressions or scripts are evaluated. State reachability is
+structural and treats guards as potentially satisfiable, not proven executable.
+
+Bundles without `design_models` preserve the legacy report shape. An empty
+model array produces an explicit empty method report. Invalid method input,
+duplicate JSON keys, non-finite numbers or sensitive-shaped method fields return
+a stable `REJECTED` error and exit code 2 without replacing an existing output.
+Supply only non-secret source and oracle locators: references are retained in
+the full local report. The CLI summary never echoes those locators.
 
 ## Next release gates
 

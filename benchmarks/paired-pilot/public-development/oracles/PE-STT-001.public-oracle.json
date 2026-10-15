@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "fixture_kind": "PUBLIC_DEVELOPMENT_TYPED_ORACLE",
+  "scenario_id": "PE-STT-001",
+  "assertions": [
+    {
+      "id": "AS-STT-001",
+      "check_id": "Q-STT-001",
+      "expected": {
+        "value_type": "JSON",
+        "value": {
+          "invalid": [
+            {"event": "archive", "from": "DRAFT", "state_expectation": "DRAFT", "side_effect_expectation": "UNCHANGED"},
+            {"event": "cancel", "from": "SUBMITTED", "state_expectation": "SUBMITTED", "side_effect_expectation": "UNCHANGED"},
+            {"event": "submit", "from": "DRAFT", "guard": "owner=false", "state_expectation": "DRAFT", "side_effect_expectation": "UNCHANGED"}
+          ],
+          "valid": [
+            {"event": "cancel", "from": "DRAFT", "side_effect_expectation": "NONE", "to": "CANCELLED"},
+            {"event": "submit", "from": "DRAFT", "guard": "owner=true", "side_effect_expectation": "PERSIST_SUBMITTED_AT", "to": "SUBMITTED"}
+          ]
+        }
+      },
+      "required_evidence_refs": ["F-STT-001", "F-STT-002", "F-STT-003", "F-STT-004", "F-STT-005", "F-STT-006"],
+      "oracle_ref": "public-development/PE-STT-001/transitions"
+    },
+    {
+      "id": "AS-STT-002",
+      "check_id": "Q-STT-002",
+      "expected": {"value_type": "STRING_SET", "value": ["F-STT-004", "F-STT-005", "F-STT-006"]},
+      "required_evidence_refs": ["F-STT-004", "F-STT-005", "F-STT-006"],
+      "oracle_ref": "public-development/PE-STT-001/invalid-provenance"
+    }
+  ]
+}

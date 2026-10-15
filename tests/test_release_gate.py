@@ -4,7 +4,16 @@ C=[{'id':'A'},{'id':'B'}]
 R=[{'case_id':'A','status':'PASS','evidence':'artifact://a'}, {'case_id':'B','status':'PASS','evidence':'artifact://b'}]
 class ReleaseGateTests(unittest.TestCase):
  def check(self,cases=C,runs=R,defects=(),approved=('A','B'),**kwargs):
-  return assess_release(cases,runs,list(defects) if defects is not None else None,approved_case_ids=approved,**kwargs)
+  # Synthetic trusted host fixture, not authenticated production evidence.
+  return assess_release(cases,runs,list(defects) if defects is not None else None,approved_case_ids=approved,evidence_verifier=lambda r: r.get('evidence') in ('artifact://a','artifact://b'),governance_verifier=kwargs.pop('governance_verifier',lambda kind, record: True),**kwargs)
+ def test_unverified_governance_blocks(self):
+  self.assertIn('UNVERIFIED_RELEASE_SCOPE',self.check(governance_verifier=None).reasons)
+ def test_unverified_closure_blocks(self):
+  result=self.check(defects=[{'id':'J-1','status':'CLOSED'}],governance_verifier=lambda kind, record: kind=='release_scope')
+  self.assertIn('UNVERIFIED_DEFECT_CLOSURE:J-1',result.reasons)
+ def test_unverified_waiver_blocks(self):
+  result=self.check(runs=[R[0],dict(R[1],status='SKIPPED')],waivers={'B':{'reason':'skip','approved_by':'lead','scope':'v1'}},governance_verifier=lambda kind,record:kind=='release_scope')
+  self.assertIn('UNAPPROVED_SKIP:B',result.reasons)
  def test_clean_requires_human(self):self.assertEqual(self.check().decision,'READY_FOR_HUMAN_REVIEW')
  def test_evidence_coverage(self):self.assertEqual(self.check().evidence_coverage,1.0)
  def test_no_cases_blocks(self):self.assertEqual(self.check(cases=[],runs=[]).decision,'BLOCKED')

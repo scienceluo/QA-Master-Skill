@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "scenario_id": "PE-DTT-001",
+  "method": "decision_table",
+  "title": "Finite delivery-fee rules with an unresolved overlap",
+  "request": "Create a draft decision-table test design from the stated finite rules. Do not execute tests, call tools, write to external systems, invent precedence, or report a pass/fail result. Return only the common response envelope.",
+  "known_facts": [
+    {"id": "F-DTT-001", "text": "Customer plan is either MEMBER or STANDARD; destination is either DOMESTIC or INTERNATIONAL."},
+    {"id": "F-DTT-002", "text": "STANDARD with INTERNATIONAL destination is unsupported and excluded from the legal rule universe."},
+    {"id": "F-DTT-003", "text": "MEMBER with DOMESTIC destination has a waived delivery fee."},
+    {"id": "F-DTT-004", "text": "STANDARD with DOMESTIC destination has a delivery fee of 5 USD."},
+    {"id": "F-DTT-005", "text": "MEMBER with INTERNATIONAL destination has a delivery fee of 15 USD."},
+    {"id": "F-DTT-006", "text": "A second rule assigns MEMBER with DOMESTIC destination a delivery fee of 8 USD; no precedence is stated."}
+  ],
+  "scope": "Finite decision-table design draft only; preserve excluded, conflicting, and unresolved behaviour without execution or approval.",
+  "checks": [
+    {"id": "Q-DTT-001", "question": "Provide the legal finite condition combinations and their classification as a JSON observation.", "value_type": "JSON"},
+    {"id": "Q-DTT-002", "question": "Provide source fact IDs that make the MEMBER/DOMESTIC outcome unresolved as a sorted unique string-set observation.", "value_type": "STRING_SET"}
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "fixture_kind": "PUBLIC_DEVELOPMENT_TYPED_ORACLE",
+  "scenario_id": "PE-DTT-001",
+  "assertions": [
+    {
+      "id": "AS-DTT-001",
+      "check_id": "Q-DTT-001",
+      "expected": {
+        "value_type": "JSON",
+        "value": {
+          "legal_combinations": [
+            {"destination": "DOMESTIC", "plan": "MEMBER", "classification": "CONFLICT"},
+            {"destination": "INTERNATIONAL", "plan": "MEMBER", "classification": "DEFINED"},
+            {"destination": "DOMESTIC", "plan": "STANDARD", "classification": "DEFINED"}
+          ],
+          "excluded_combinations": [
+            {"destination": "INTERNATIONAL", "plan": "STANDARD"}
+          ]
+        }
+      },
+      "required_evidence_refs": ["F-DTT-001", "F-DTT-002", "F-DTT-003", "F-DTT-004", "F-DTT-005", "F-DTT-006"],
+      "oracle_ref": "public-development/PE-DTT-001/legal-universe"
+    },
+    {
+      "id": "AS-DTT-002",
+      "check_id": "Q-DTT-002",
+      "expected": {"value_type": "STRING_SET", "value": ["F-DTT-003", "F-DTT-006"]},
+      "required_evidence_refs": ["F-DTT-003", "F-DTT-006"],
+      "oracle_ref": "public-development/PE-DTT-001/overlap-provenance"
+    }
+  ]
+}

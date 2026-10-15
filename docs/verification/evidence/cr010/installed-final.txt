@@ -1,0 +1,1 @@
+{"installed_wheel_cases": 3, "outcome": "PASS", "network_process_sentinels": "enforced inside installed CLI process"}

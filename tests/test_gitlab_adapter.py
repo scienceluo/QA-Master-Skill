@@ -22,7 +22,9 @@ class GitLabAdapterTests(unittest.TestCase):
     def test_unreviewed(self):self.assertEqual(self.c.file(1,'src/a.py')['provenance'],'SOURCE_CODE_UNREVIEWED')
     def test_http_rejected(self):
         with self.assertRaises(ValueError):GitLabReader('http://git.example')
-    def test_http_explicit_optin(self):self.assertEqual(GitLabReader('http://git.example',allow_http=True).origin,'http://git.example')
+    def test_http_explicit_optin_without_credential(self):self.assertEqual(GitLabReader('http://git.example',allow_http=True).origin,'http://git.example')
+    def test_http_explicit_optin_rejects_credential(self):
+        with self.assertRaises(ValueError):GitLabReader('http://git.example','fake-secret',allow_http=True)
     def test_url_credentials_rejected(self):
         with self.assertRaises(ValueError):GitLabReader('https://u:pass@git.example')
     def test_url_path_rejected(self):

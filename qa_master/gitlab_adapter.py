@@ -3,6 +3,7 @@ import json,base64
 from urllib.parse import quote,urlsplit,urlencode
 from urllib.request import Request,urlopen
 from urllib.error import HTTPError,URLError
+from .http_transport import read_bytes
 
 class GitLabError(RuntimeError): pass
 
@@ -11,16 +12,15 @@ class GitLabReader:
         u=urlsplit(base_url)
         if u.scheme not in ({'http','https'} if allow_http else {'https'}) or not u.hostname or u.username or u.password or u.query or u.fragment or u.path not in ('','/'):
             raise ValueError('GitLab origin URL required (HTTPS by default)')
+        if u.scheme=='http' and token:
+            raise ValueError('Credentialed GitLab HTTP is forbidden')
         if not isinstance(max_bytes,int) or not 1<=max_bytes<=20_000_000:raise ValueError('Invalid size limit')
         self.origin=base_url.rstrip('/');self.token=token;self.transport=transport or self._network;self.max_bytes=max_bytes
 
     def _network(self,url,headers):
         try:
-            with urlopen(Request(url,headers=headers,method='GET'),timeout=20) as response:
-                data=response.read(self.max_bytes+1)
-                if len(data)>self.max_bytes:raise GitLabError('Response exceeds limit')
-                return data
-        except (HTTPError,URLError) as e:raise GitLabError('GitLab read failed: '+type(e).__name__) from None
+            return read_bytes(url,headers,limit=self.max_bytes)
+        except (HTTPError,URLError,ValueError) as e:raise GitLabError('GitLab read failed: '+type(e).__name__) from None
 
     def _get(self,path,params=None):
         if not path.startswith('/') or '..' in path or '://' in path:raise ValueError('Unsafe API path')
@@ -78,4 +78,16 @@ class GitLabReader:
         if type(pipeline_id) is not int or pipeline_id < 1:raise ValueError('Positive pipeline ID required')
         result=self._get('/projects/'+self._project_id(project)+'/pipelines/'+str(pipeline_id))
         if not isinstance(result,dict):raise GitLabError('Invalid GitLab pipeline metadata')
+        return result
+
+    def protected_branches(self,project):
+        result=self._get('/projects/'+self._project_id(project)+'/protected_branches')
+        if not isinstance(result,list) or any(not isinstance(item,dict) or not isinstance(item.get('name'),str) for item in result):
+            raise GitLabError('Invalid protected branch metadata')
+        return result
+
+    def protected_tags(self,project):
+        result=self._get('/projects/'+self._project_id(project)+'/protected_tags')
+        if not isinstance(result,list) or any(not isinstance(item,dict) or not isinstance(item.get('name'),str) for item in result):
+            raise GitLabError('Invalid protected tag metadata')
         return result

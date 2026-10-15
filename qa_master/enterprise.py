@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 import json,os,re
+from .http_transport import read_bytes
 class IntegrationError(RuntimeError):pass
 @dataclass(frozen=True)
 class Target:
@@ -20,10 +21,7 @@ class ReadOnlyConnector:
         self.transport=transport or self._http
     @staticmethod
     def _http(url,headers):
-        with urlopen(Request(url,headers=headers,method='GET'),timeout=20) as r:
-            blob=r.read(2_000_001)
-            if len(blob)>2_000_000:raise IntegrationError('Response size limit exceeded')
-            return json.loads(blob)
+        return json.loads(read_bytes(url,headers,limit=2_000_000))
     def read(self,path):
         if not isinstance(path,str) or not path.startswith('/') or path.startswith('//') or '://' in path or '..' in path.split('/') or '#' in path:raise ValueError('Unsafe path')
         token=os.environ.get(self.target.token_env)
@@ -44,11 +42,15 @@ class WriteAuthorization:
 def build_synapsert_plan(*,project,plan,cycle,case_ids,assignee,approval=None):
     if not all(isinstance(x,str) and x.strip() for x in (project,plan,cycle,assignee)):raise ValueError('Project, plan, cycle and bug assignee required')
     if not case_ids or len(set(case_ids))!=len(case_ids) or not all(isinstance(x,str) and x.strip() for x in case_ids):raise ValueError('Nonempty unique case IDs required')
-    resource=project+'/'+plan+'/'+cycle
-    version=','.join(sorted(case_ids))
+    from .approval import artifact_digest
+    envelope={'schema_version':1,'action':'synapsert.plan','project':project,
+              'plan':plan,'cycle':cycle,'case_ids':sorted(case_ids),'assignee':assignee}
+    resource='synapsert.plan:'+artifact_digest(envelope)
+    version=artifact_digest(envelope)
     verified=approval.validate(project,'synapsert.plan',resource,version) if approval else False
     return {'mode':'DRY_RUN_ONLY','project':project,'plan':plan,'cycle':cycle,'case_ids':list(case_ids),'assignee':assignee,
-            'approval_verified':verified,'writes_performed':0,'resource':resource,'case_version':version}
+            'approval_verified':False,'scope_assertion_matches':verified,
+            'writes_performed':0,'resource':resource,'case_version':version,'authorization_envelope':envelope}
 def validate_machine(host,transport,credential_env):
     if not isinstance(host,str) or not re.fullmatch(r'[A-Za-z0-9.-]{1,253}',host):raise ValueError('Invalid hostname')
     if transport not in ('ssh','winrm','runner'):raise ValueError('Unsupported transport')

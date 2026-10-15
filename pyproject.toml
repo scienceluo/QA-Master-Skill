@@ -8,7 +8,10 @@ description = "Human-gated, resumable QA workflow controller"
 requires-python = ">=3.10"
 [project.scripts]
 qa-master = "qa_master.__main__:main"
+qa-master-paired-eval = "qa_master.paired_evaluation:main"
 [tool.setuptools.packages.find]
 include = ["qa_master*"]
+[tool.setuptools.package-data]
+qa_master = ["skills/**/*.md", "skills/**/*.json"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
 import re
+from .junit_ingest import ingest_junit
 HASH=re.compile(r'^[0-9a-f]{64}$')
 @dataclass(frozen=True)
 class RunManifest:
@@ -20,14 +21,25 @@ class RunManifest:
             raise ValueError('Invalid JUnit SHA-256')
         if not self.approved_case_ids or any(not isinstance(v,str) or not v for v in self.approved_case_ids) or len(set(self.approved_case_ids))!=len(self.approved_case_ids):
             raise ValueError('Invalid approved case set')
-def bind_junit(ingested:dict,manifest:RunManifest,junit_path:str,*,verified_source=False)->dict:
-    """Digest/scope verification only; caller-provided boolean never creates trust."""
+def _run_signature(report):
+    if not isinstance(report,dict) or not isinstance(report.get('runs'),list):
+        raise ValueError('Invalid imported JUnit report')
+    try:
+        return tuple((row['case_id'],row['status'],row['raw_outcome'],row['evidence']) for row in report['runs'])
+    except (KeyError,TypeError) as exc:
+        raise ValueError('Invalid imported JUnit run') from exc
+
+def bind_junit(ingested:dict,manifest:RunManifest,junit_path:str,*,case_map,verified_source=False)->dict:
+    """Reparse the raw JUnit input; never trust a caller-mutated parsed report."""
     manifest.validate()
-    digest=sha256(Path(junit_path).read_bytes()).hexdigest()
+    raw=Path(junit_path).read_bytes()
+    digest=sha256(raw).hexdigest()
     if digest!=manifest.junit_sha256 or digest!=ingested.get('source_sha256'):
         raise ValueError('JUnit artifact digest mismatch')
-    runs=ingested.get('runs')
-    if not isinstance(runs,list) or not runs:raise ValueError('No imported results')
+    reparsed=ingest_junit(junit_path,case_map,max_bytes=len(raw))
+    if _run_signature(ingested)!=_run_signature(reparsed):
+        raise ValueError('Imported JUnit results do not match raw artifact')
+    runs=reparsed['runs']
     allowed=set(manifest.approved_case_ids)
     if len({r.get('case_id') for r in runs})!=len(runs) or any(r.get('case_id') not in allowed for r in runs):
         raise ValueError('Case set mismatch')

@@ -1,0 +1,17 @@
+{
+  "task_id": "TASK-041",
+  "change_id": "CR-011",
+  "commit": "0d712c8902633902cabe07fa0e20a7881b036c8c",
+  "hash_basis": "exact working-tree bytes at developer freeze; Git commit additionally binds normalized repository blobs",
+  "files": [
+    {"path": "qa_master/_paired_contract.py", "sha256": "223f1fa8bdb961c591ed1297ea301433abc54ea5a0b083c0302e0cc70ffd2353"},
+    {"path": "qa_master/_paired_process.py", "sha256": "409c5d5dcfe3cd029e3bf78c2681eca9a1eb9880c6242cf7dda7bf10dc2cf8fe"},
+    {"path": "qa_master/paired_evaluation.py", "sha256": "0b1b340166e389db4e43ed185565ba17842b956c71b623d918415e35bc0656dd"},
+    {"path": "tests/test_paired_evaluation.py", "sha256": "2b4c5c461b0b032799646ccd60a662cc08f7a6ec59c79746273ff3aaadcf7644"},
+    {"path": "pyproject.toml", "sha256": "11f279f18b40c84098bdc4cd1d3f7343e770a09c839ecefa3fb2c4d1bced002a"}
+  ],
+  "verification_domain": "DEVELOPER_ONLY",
+  "model_pilot": "NOT_EXECUTED",
+  "human_rating_status": "NOT_EXECUTED",
+  "claim_status": "NOT_ASSERTED"
+}

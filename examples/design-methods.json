@@ -1,0 +1,217 @@
+{
+  "project": "structured-design-example",
+  "requirements": [
+    {
+      "id": "REQ-EXAMPLE",
+      "text": "Model the amount, discount and order lifecycle",
+      "source": "examples/design-methods-notes.md",
+      "approved": false,
+      "dimension": "functional",
+      "acceptance": "Review the explicitly linked model and oracle references",
+      "priority": "P1"
+    }
+  ],
+  "design_models": {
+    "schema_version": 1,
+    "source_refs": [
+      {
+        "id": "SRC-REQ",
+        "kind": "requirement",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "SRC-RULE",
+        "kind": "model",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "SRC-STATE",
+        "kind": "model",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "SRC-EFFECT",
+        "kind": "effect",
+        "locator": "examples/design-methods-notes.md"
+      }
+    ],
+    "oracle_refs": [
+      {
+        "id": "OR-DENY",
+        "kind": "denial",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "OR-DISCOUNT",
+        "kind": "outcome",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "OR-INVALID",
+        "kind": "invalid",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "OR-NORMAL",
+        "kind": "outcome",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "OR-SUBMITTED",
+        "kind": "transition",
+        "locator": "examples/design-methods-notes.md"
+      },
+      {
+        "id": "OR-VALID",
+        "kind": "valid",
+        "locator": "examples/design-methods-notes.md"
+      }
+    ],
+    "models": [
+      {
+        "id": "DM-AMOUNT",
+        "method": "boundary",
+        "title": "Accepted amount",
+        "dimension": "functional",
+        "requirement_ids": [
+          "REQ-EXAMPLE"
+        ],
+        "source_refs": [
+          "SRC-REQ"
+        ],
+        "spec": {
+          "numeric_type": "decimal",
+          "precision": 6,
+          "scale": 2,
+          "origin": "0",
+          "step": "0.01",
+          "lower": {
+            "value": "0.01",
+            "inclusive": true
+          },
+          "upper": {
+            "value": "100",
+            "inclusive": false
+          },
+          "oracle_by_class": {
+            "IN_DOMAIN": "OR-VALID",
+            "LOWER_INVALID": "OR-INVALID",
+            "UPPER_INVALID": "OR-INVALID",
+            "BOTH_INVALID": "OR-INVALID"
+          }
+        }
+      },
+      {
+        "id": "DM-DISCOUNT",
+        "method": "decision_table",
+        "title": "Discount decision",
+        "dimension": "functional",
+        "requirement_ids": [
+          "REQ-EXAMPLE"
+        ],
+        "source_refs": [
+          "SRC-REQ",
+          "SRC-RULE"
+        ],
+        "spec": {
+          "conditions": [
+            {
+              "id": "member",
+              "values": [
+                false,
+                true
+              ]
+            },
+            {
+              "id": "region",
+              "values": [
+                "domestic",
+                "foreign"
+              ]
+            }
+          ],
+          "constraints": [],
+          "rules": [
+            {
+              "id": "R1",
+              "when": {
+                "member": true
+              },
+              "outcome_id": "discount",
+              "source_refs": [
+                "SRC-RULE"
+              ],
+              "oracle_ref": "OR-DISCOUNT"
+            },
+            {
+              "id": "R2",
+              "when": {
+                "member": false
+              },
+              "outcome_id": "normal",
+              "source_refs": [
+                "SRC-RULE"
+              ],
+              "oracle_ref": "OR-NORMAL"
+            }
+          ]
+        }
+      },
+      {
+        "id": "DM-ORDER",
+        "method": "state_transition",
+        "title": "Order submission",
+        "dimension": "functional",
+        "requirement_ids": [
+          "REQ-EXAMPLE"
+        ],
+        "source_refs": [
+          "SRC-REQ",
+          "SRC-STATE"
+        ],
+        "spec": {
+          "states": [
+            {
+              "id": "draft",
+              "terminal": false,
+              "source_refs": [
+                "SRC-STATE"
+              ]
+            },
+            {
+              "id": "submitted",
+              "terminal": true,
+              "source_refs": [
+                "SRC-STATE"
+              ]
+            }
+          ],
+          "initial_state": "draft",
+          "triggers": [
+            "edit",
+            "submit"
+          ],
+          "transitions": [
+            {
+              "id": "T1",
+              "validity": "valid",
+              "from_state": "draft",
+              "to_state": "submitted",
+              "trigger": "submit",
+              "guard_refs": [],
+              "effect_refs": [
+                "SRC-EFFECT"
+              ],
+              "source_refs": [
+                "SRC-STATE"
+              ],
+              "oracle_ref": "OR-SUBMITTED"
+            }
+          ],
+          "closed_world": true,
+          "closed_world_deny_oracle_ref": "OR-DENY"
+        }
+      }
+    ]
+  }
+}

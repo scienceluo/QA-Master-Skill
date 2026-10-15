@@ -1,6 +1,16 @@
 import tempfile, unittest
 from pathlib import Path
-from qa_master.workflow import Workflow
+from qa_master.approval import artifact_digest
+from qa_master.workflow import VerifiedCompletionReceipt, Workflow
+
+def synthetic_receipt_verifier(receipt,binding):
+ # Test-only host fixture. It is not a production approval or authenticated receipt.
+ if not (receipt=='synthetic-test-receipt' and binding['project']=='demo' and
+         binding['step']=='test_plan' and binding['result_ref']=='plan1'):
+  return None
+ return VerifiedCompletionReceipt('fixture-plan1','synthetic-test-host',
+  '2026-10-14T00:00:00Z','2026-10-14T01:00:00Z',artifact_digest(binding),'plan1')
+
 class WorkflowTests(unittest.TestCase):
  def setup_workflow(self):
   w=Workflow('demo');w.request(['execution']);return w
@@ -12,7 +22,7 @@ class WorkflowTests(unittest.TestCase):
  def test_input_present(self):
   w=self.setup_workflow();w.answer('source','doc');self.assertEqual(w.evaluate('requirements'),'READY')
  def test_cannot_skip(self):
-  with self.assertRaises(ValueError):self.setup_workflow().complete('execution','run1')
+  with self.assertRaises(PermissionError):self.setup_workflow().complete('execution','run1')
  def test_no_evidence(self):
   w=self.setup_workflow();w.answer('source','doc')
   with self.assertRaises(ValueError):w.complete('requirements','')
@@ -30,7 +40,13 @@ class WorkflowTests(unittest.TestCase):
   w.approve('cases','c1','demo');w.complete('case_review','cases')
   for k in ('jira_project','plan_name','cycle_name'):w.answer(k,k+'-val')
   self.assertEqual(w.evaluate('test_plan'),'WAITING_APPROVAL')
-  w.approve('test_plan','p1','demo');w.complete('test_plan','plan1')
+  artifact={'case_ids':['TC-1'],'scope':'demo'}
+  w.approve('test_plan','p1','demo')
+  self.assertEqual(w.evaluate_exact('test_plan',{'test_plan':artifact},{'test_plan':'demo'}),'WAITING_APPROVAL')
+  w.approve_exact('test_plan','demo',artifact,'reviewer')
+  self.assertEqual(w.evaluate_exact('test_plan',{'test_plan':artifact},{'test_plan':'demo'}),'READY')
+  w.complete_exact('test_plan','plan1',{'test_plan':artifact},{'test_plan':'demo'},
+                   receipt='synthetic-test-receipt',verifier=synthetic_receipt_verifier)
   w.answer('build_ref','sha1');w.answer('environment','lab')
   self.assertEqual(w.evaluate('execution'),'WAITING_APPROVAL')
   w.approve('execution','sha1','demo-lab');self.assertEqual(w.evaluate('execution'),'READY')

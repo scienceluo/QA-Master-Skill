@@ -1,0 +1,55 @@
+test_tc_dm_101_boundary_exact_open_closed_and_origins (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_101_boundary_exact_open_closed_and_origins) ... FAIL
+test_tc_dm_102_empty_missing_and_34digit_exact (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_102_empty_missing_and_34digit_exact) ... ok
+test_tc_dm_103_decision_six_classes_and_ids (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_103_decision_six_classes_and_ids) ... ok
+test_tc_dm_104_typed_constraints_all_operators (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_104_typed_constraints_all_operators) ... ok
+test_tc_dm_105_ast_and_product_limits (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_105_ast_and_product_limits) ... ok
+test_tc_dm_106_state_duplicate_conflict_unreachable (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_106_state_duplicate_conflict_unreachable) ... ok
+test_tc_dm_107_closedworld_terminal_and_limits (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_107_closedworld_terminal_and_limits) ... ok
+test_tc_dm_108_models_binding_permutations (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_108_models_binding_permutations) ... ok
+test_tc_dm_109_rejections_and_no_side_effects (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_109_rejections_and_no_side_effects) ... ok
+test_decimal_34_digit_and_noncanonical_or_kind_errors_are_atomic (tests.test_design_methods_independent.IndependentDesignMethods.test_decimal_34_digit_and_noncanonical_or_kind_errors_are_atomic) ... ok
+test_model_limit_and_malformed_nested_scalar_reject_before_result (tests.test_design_methods_independent.IndependentDesignMethods.test_model_limit_and_malformed_nested_scalar_reject_before_result) ... ok
+test_oracle_boundary_exact_decimal_and_metadata_binding (tests.test_design_methods_independent.IndependentDesignMethods.test_oracle_boundary_exact_decimal_and_metadata_binding) ... ok
+test_oracle_decision_ledger_and_typed_boolean_integer (tests.test_design_methods_independent.IndependentDesignMethods.test_oracle_decision_ledger_and_typed_boolean_integer) ... ok
+test_oracle_same_outcome_divergent_oracle_is_conflict (tests.test_design_methods_independent.IndependentDesignMethods.test_oracle_same_outcome_divergent_oracle_is_conflict) ... ok
+test_oracle_state_reachability_is_structural_and_missing_oracle_not_case (tests.test_design_methods_independent.IndependentDesignMethods.test_oracle_state_reachability_is_structural_and_missing_oracle_not_case) ... ok
+test_permutations_and_loader_errors_are_deterministic_and_atomic (tests.test_design_methods_independent.IndependentDesignMethods.test_permutations_and_loader_errors_are_deterministic_and_atomic) ... ok
+
+======================================================================
+FAIL: test_tc_dm_101_boundary_exact_open_closed_and_origins (tests.test_design_methods_independent.AcceptanceMatrix.test_tc_dm_101_boundary_exact_open_closed_and_origins)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\QA-Master-Skill\tests\test_design_methods_independent.py", line 92, in test_tc_dm_101_boundary_exact_open_closed_and_origins
+    self.assertEqual([(p['value'],p['class'],p['origins']) for p in a['points']], [(-2,'LOWER_INVALID',['lower']),(-1,'IN_DOMAIN' if left else 'LOWER_INVALID',['lower']),(0,'IN_DOMAIN',['lower','upper']),(1,'IN_DOMAIN' if right else 'UPPER_INVALID',['upper']),(2,'UPPER_INVALID',['upper'])])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [('-2', 'LOWER_INVALID', ['lower']), ('-1',[134 chars]r'])] != [(-2, 'LOWER_INVALID', ['lower']), (-1, 'LO[124 chars]r'])]
+
+First differing element 0:
+('-2', 'LOWER_INVALID', ['lower'])
+(-2, 'LOWER_INVALID', ['lower'])
+
+- [('-2', 'LOWER_INVALID', ['lower']),
+?   -  -
+
++ [(-2, 'LOWER_INVALID', ['lower']),
+-  ('-1', 'LOWER_INVALID', ['lower']),
+?   -  -
+
++  (-1, 'LOWER_INVALID', ['lower']),
+-  ('0', 'IN_DOMAIN', ['lower', 'upper']),
+?   - -
+
++  (0, 'IN_DOMAIN', ['lower', 'upper']),
+-  ('1', 'UPPER_INVALID', ['upper']),
+?   - -
+
++  (1, 'UPPER_INVALID', ['upper']),
+-  ('2', 'UPPER_INVALID', ['upper'])]
+?   - -
+
++  (2, 'UPPER_INVALID', ['upper'])]
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.570s
+
+FAILED (failures=1)

@@ -7,6 +7,7 @@ from urllib.request import Request,urlopen
 from .ci_attestation import assess_ci_job
 from .junit_ingest import ingest_junit
 from .evidence_binding import RunManifest,bind_junit
+from .http_transport import read_bytes
 class ArtifactError(ValueError):pass
 def fetch_job_junit(reader,expected,case_map,*,junit_entry,max_zip_bytes=10_000_000,max_xml_bytes=5_000_000,artifact_transport=None):
     report=assess_ci_job(reader,expected)
@@ -16,10 +17,8 @@ def fetch_job_junit(reader,expected,case_map,*,junit_entry,max_zip_bytes=10_000_
     headers={'Accept':'application/zip'}
     if reader.token:headers['PRIVATE-TOKEN']=reader.token
     def download(url,headers,limit):
-        with urlopen(Request(url,headers=headers,method='GET'),timeout=20) as response:
-            blob=response.read(limit+1)
-            if len(blob)>limit:raise ArtifactError('ZIP too large')
-            return blob
+        try:return read_bytes(url,headers,limit=limit)
+        except (OSError,ValueError):raise ArtifactError('Artifact download failed') from None
     data=(artifact_transport or download)(url,headers,max_zip_bytes)
     if not isinstance(data,bytes) or len(data)>max_zip_bytes:raise ArtifactError('Invalid/oversized ZIP')
     try:
@@ -38,8 +37,11 @@ def fetch_job_junit(reader,expected,case_map,*,junit_entry,max_zip_bytes=10_000_
         parsed=ingest_junit(path,case_map,max_bytes=max_xml_bytes)
         manifest=RunManifest(str(expected.project_id),expected.commit_sha,expected.environment,
                             str(expected.job_id),hashlib.sha256(xml).hexdigest(),tuple(r['case_id'] for r in parsed['runs']))
-        bound=bind_junit(parsed,manifest,str(path))
-    bound.update({'job_metadata_checked':True,'artifact_downloaded_from_job_api':True,
+        bound=bind_junit(parsed,manifest,str(path),case_map=case_map)
+    bound.update({'job_metadata_checked':True,'artifact_downloaded_from_job_api':artifact_transport is None,
+                  'transport_kind':'injected' if artifact_transport is not None else 'builtin_https',
+                  'manifest_origin':'OBSERVED_ARTIFACT_NOT_APPROVED_BASELINE',
+                  'raw_artifact_retained':False,
                   'archive_sha256':hashlib.sha256(data).hexdigest(),'source_authenticated':False,
                   'provenance':'CI_ARTIFACT_FETCHED_NOT_ATTESTED'})
     return bound

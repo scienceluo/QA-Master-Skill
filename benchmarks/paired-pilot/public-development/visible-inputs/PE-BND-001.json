@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scenario_id": "PE-BND-001",
+  "method": "boundary",
+  "title": "Inclusive whole-number order quantity",
+  "request": "Create a draft boundary-test design for the stated quantity rule. Do not execute tests, call tools, write to external systems, or report a pass/fail result. Return only the common response envelope.",
+  "known_facts": [
+    {"id": "F-BND-001", "text": "Order quantity is a whole number from 1 through 9, inclusive."},
+    {"id": "F-BND-002", "text": "Quantity 0 and quantity 10 must be rejected."}
+  ],
+  "scope": "Boundary-design draft only; no execution, approval, release, or external write.",
+  "checks": [
+    {"id": "Q-BND-001", "question": "Provide the accepted and rejected neighbouring quantity candidates as a JSON observation.", "value_type": "JSON"},
+    {"id": "Q-BND-002", "question": "Provide the source fact IDs used for the boundary rule as a sorted unique string-set observation.", "value_type": "STRING_SET"}
+  ]
+}

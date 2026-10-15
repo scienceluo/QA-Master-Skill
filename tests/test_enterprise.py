@@ -32,9 +32,16 @@ class EnterpriseTests(unittest.TestCase):
  def test_duplicate_cases(self):
   with self.assertRaises(ValueError):build_synapsert_plan(project='CSE',plan='P',cycle='C',case_ids=['A','A'],assignee='dev')
  def test_approved_plan_still_dry_run(self):
-  a=WriteAuthorization('CSE','synapsert.plan','CSE/P/C','owner','A,B')
+  draft=build_synapsert_plan(project='CSE',plan='P',cycle='C',case_ids=['A','B'],assignee='dev')
+  a=WriteAuthorization('CSE','synapsert.plan',draft['resource'],'owner',draft['case_version'])
   p=build_synapsert_plan(project='CSE',plan='P',cycle='C',case_ids=['A','B'],assignee='dev',approval=a)
-  self.assertTrue(p['approval_verified']);self.assertEqual(p['mode'],'DRY_RUN_ONLY')
+  self.assertFalse(p['approval_verified']);self.assertTrue(p['scope_assertion_matches']);self.assertEqual(p['mode'],'DRY_RUN_ONLY')
+  with self.assertRaises(PermissionError):
+   build_synapsert_plan(project='CSE',plan='P',cycle='C',case_ids=['A','B'],assignee='other',approval=a)
+ def test_delimited_case_sets_are_distinct(self):
+  first=build_synapsert_plan(project='P',plan='P',cycle='C',case_ids=['A','B,C'],assignee='dev')
+  other=build_synapsert_plan(project='P',plan='P',cycle='C',case_ids=['A,B','C'],assignee='dev')
+  self.assertNotEqual(first['case_version'],other['case_version'])
  def test_machine_ssh(self):self.assertEqual(validate_machine('10.1.2.3','ssh','SSH_KEY')['state'],'NOT_CONNECTED')
  def test_machine_invalid(self):
   with self.assertRaises(ValueError):validate_machine('https://host','ssh','SSH_KEY')

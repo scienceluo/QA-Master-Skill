@@ -1,0 +1,3 @@
+Processing d:\qa-master-skill\.qa-master\cr010-independent\wheels\qa_master_skill-0.1.0-py3-none-any.whl
+Installing collected packages: qa-master-skill
+Successfully installed qa-master-skill-0.1.0

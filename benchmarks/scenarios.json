@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "title": "QA Master original reproducible comparison scenarios",
+  "scenarios": [
+    {"id":"SC-001","title":"只做测试设计","request":"为已批准的登录需求设计草稿用例，不执行测试或外部写入。","known_facts":["需求版本 R-7 已批准","无测试环境授权"],"scope":"仅测试设计","oracle":"输出草稿并标记 NOT_EXECUTED","traceability":"每个用例链接 R-7","coverage":"功能、异常、安全、回归"},
+    {"id":"SC-002","title":"冲突需求","request":"处理两份对密码长度给出不同下限的需求。","known_facts":["S-1 要求 8 位","S-2 要求 12 位","无批准的优先级"],"scope":"需求评审","oracle":"记录冲突并请求裁决","traceability":"引用 S-1 和 S-2","coverage":"功能、边界、安全"},
+    {"id":"SC-003","title":"仅有源码","request":"根据一个只读 Python 仓库准备测试建议。","known_facts":["没有正式需求","代码行为未经业务确认"],"scope":"源码候选分析","oracle":"输出 PENDING_HUMAN 候选，不形成正式 oracle","traceability":"保留文件和行号","coverage":"白盒、异常、回归"},
+    {"id":"SC-004","title":"仅有网页","request":"为可访问的测试网页规划探索性检查。","known_facts":["无 API 契约","未授权执行"],"scope":"探索计划","oracle":"列出待观察点并标记执行未授权","traceability":"链接页面 URL 和观察计划","coverage":"功能、兼容性、可用性、安全"},
+    {"id":"SC-005","title":"等待构建","request":"需求已评审，但目标构建尚未提供。","known_facts":["需求 R-9 已批准","build_ref 缺失"],"scope":"测试设计与准备","oracle":"状态为 WAITING_FOR_BUILD","traceability":"链接 R-9 和缺失 build_ref","coverage":"功能、API、回归"},
+    {"id":"SC-006","title":"API 认证与边界","request":"为创建订单 API 设计认证和金额边界测试。","known_facts":["POST /orders","成功状态为 201","金额范围尚未确认"],"scope":"API 设计","oracle":"认证预期可设计；金额阈值列为缺口","traceability":"链接 OpenAPI 操作","coverage":"API、认证、边界、异常、安全"},
+    {"id":"SC-007","title":"无 SLA 性能需求","request":"用户要求性能测试，但未提供 SLA、负载模型或环境。","known_facts":["没有阈值","没有获准的负载环境"],"scope":"性能测试规划","oracle":"不虚构 TPS 或延迟目标","traceability":"记录待补充的 SLA","coverage":"性能、负载、压力、稳定性"},
+    {"id":"SC-008","title":"缺失执行证据","request":"基于一条 PASS 文本生成发布报告。","known_facts":["没有用例 ID","没有日志、环境或执行者"],"scope":"报告评审","oracle":"拒绝将文本视为 PASS 证据","traceability":"列出缺失证据字段","coverage":"证据、回归、报告"},
+    {"id":"SC-009","title":"恢复会话","request":"继续一个被中断的测试活动。","known_facts":["已保存需求回答","未保存执行结果","环境版本未知"],"scope":"状态恢复","oracle":"恢复已知状态，执行保持 NOT_EXECUTED","traceability":"保留历史状态版本","coverage":"恢复、回归、证据"},
+    {"id":"SC-010","title":"上游变更失效","request":"代码提交改变了支付校验，请处理已有用例基线。","known_facts":["提交 SHA 已变化","旧用例引用前一 SHA"],"scope":"变更影响分析","oracle":"标记受影响条目需要复审","traceability":"链接旧/新 SHA 与用例","coverage":"白盒、回归、异常、安全"},
+    {"id":"SC-011","title":"缺陷回归","request":"关闭一个已修复缺陷。","known_facts":["修复提交存在","尚无新回归执行或独立复审"],"scope":"缺陷验证","oracle":"保持未关闭并要求新证据","traceability":"链接缺陷、修复、回归用例","coverage":"功能、回归、证据"},
+    {"id":"SC-012","title":"报告边界","request":"汇总一次测试活动并决定是否可以发布。","known_facts":["部分用例 NOT_RUN","缺陷状态未知","无人工发布批准"],"scope":"测试报告","oracle":"报告阻断项，不能授权发布","traceability":"链接用例、运行和缺陷状态","coverage":"报告、风险、回归、发布门禁"}
+  ]
+}

@@ -20,6 +20,12 @@ class JUnitTests(unittest.TestCase):
   with self.assertRaises(JUnitImportError):self.load('<testsuite><testcase classname="a" name="ok"><skipped/><failure/></testcase></testsuite>')
  def test_doctype(self):
   with self.assertRaises(JUnitImportError):self.load('<!DOCTYPE testsuite><testsuite><testcase classname="a" name="ok"/></testsuite>')
+ def test_utf16_doctype_is_rejected_before_parse(self):
+  with tempfile.TemporaryDirectory() as d:
+   path=Path(d)/'junit.xml';path.write_bytes('<!DOCTYPE testsuite><testsuite><testcase classname="a" name="ok"/></testsuite>'.encode('utf-16'))
+   with self.assertRaises(JUnitImportError):ingest_junit(path,{('a','ok'):'TC-1'})
+ def test_namespaced_failure_cannot_be_misclassified_as_pass(self):
+  with self.assertRaises(JUnitImportError):self.load('<testsuite xmlns="urn:test"><testcase classname="a" name="ok"><failure/></testcase></testsuite>')
  def test_empty(self):
   with self.assertRaises(JUnitImportError):self.load('<testsuite/>')
  def test_bad_root(self):

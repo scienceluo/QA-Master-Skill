@@ -1,0 +1,20 @@
+[
+  {
+    "case": "valid",
+    "returncode": 0,
+    "stdout": "{\"project\": \"Installed independent\", \"cases\": 0, \"requirement_findings\": 3, \"unresolved_design\": 2, \"status\": \"DRAFT_UNAPPROVED\", \"output\": \"D:\\\\QA-Master-Skill\\\\.qa-master\\\\cr010-independent\\\\valid-output.json\", \"method_candidates\": 10, \"method_obligations\": 3, \"execution\": \"NOT_AUTHORIZED\"}\n",
+    "stderr": ""
+  },
+  {
+    "case": "legacy",
+    "returncode": 0,
+    "stdout": "{\"project\": \"Installed independent\", \"cases\": 0, \"requirement_findings\": 3, \"unresolved_design\": 2, \"status\": \"DRAFT_UNAPPROVED\", \"output\": \"D:\\\\QA-Master-Skill\\\\.qa-master\\\\cr010-independent\\\\legacy-output.json\"}\n",
+    "stderr": ""
+  },
+  {
+    "case": "invalid",
+    "returncode": 2,
+    "stdout": "{\"status\": \"REJECTED\", \"error\": \"SECRET_FIELD_FORBIDDEN\"}\n",
+    "stderr": ""
+  }
+]

@@ -10,8 +10,9 @@ STAGE_ALIASES={
  'report':('测试报告','生成报告','测试总结','test report'),
  'execution':('执行测试','开始测试','运行测试','跑测试','run tests','execute tests')}
 NEGATED_EXECUTION=('不执行测试','不要执行测试','暂不执行测试','不开始测试','先不测试','开发还没完成',
- '开发还在进行','等待开发','不跑测试','不要运行测试','do not run tests','without executing')
+ '开发还在进行','等待开发','不跑测试','不要运行测试','严禁执行','禁止执行','无需执行','不得执行','不能执行','do not run tests','without executing','never execute','must not execute')
 NEGATED_WRITE=('不导入','不要导入','不创建','不要创建','不要写入','不提交bug','不要提交bug','不修改jira','不操作jira')
+REQUESTED_WRITE=('导入jira','导入synapsert','导入用例','创建测试计划','创建测试周期','提交bug','回写结果')
 FULL=('从头到尾','全流程','完整测试流程','完整质量闭环','end to end')
 LIMITED=('只','仅','先','only','just')
 @dataclass(frozen=True)
@@ -31,10 +32,12 @@ def plan_task(message:str,known:dict|None=None)->dict:
  if not isinstance(message,str) or not message.strip():raise ValueError('Nonempty task required')
  p=message.casefold().strip();known=known or {}
  no_run=any(s in p for s in NEGATED_EXECUTION)
- no_write=any(s in p for s in NEGATED_WRITE)
+ no_write=any(s in p for s in NEGATED_WRITE) or not any(s in p for s in REQUESTED_WRITE)
  stages=[s for s,terms in STAGE_ALIASES.items() if any(t in p for t in terms)]
  limited=any(t in p for t in LIMITED)
- if any(t in p for t in FULL) and not limited:stages=list(STAGE_ALIASES)
+ if any(t in p for t in FULL) and not limited:
+  from .workflow import STEPS
+  stages=list(STEPS)
  if no_run:stages=[s for s in stages if s not in ('execution','regression')]
  if not stages:stages=['discovery']
  if not any(s in stages for s in ('execution','regression')):no_run=True

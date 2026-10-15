@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "scenario_id": "PE-STT-001",
+  "method": "state_transition",
+  "title": "Submission and cancellation state transitions",
+  "request": "Create a draft state-transition test design from the stated model. Do not execute tests, call tools, write to external systems, invent states/events, or report a pass/fail result. Return only the common response envelope.",
+  "known_facts": [
+    {"id": "F-STT-001", "text": "The only states are DRAFT, SUBMITTED, and CANCELLED. The initial state is DRAFT."},
+    {"id": "F-STT-002", "text": "submit from DRAFT with guard owner=true transitions to SUBMITTED and persists submitted_at."},
+    {"id": "F-STT-003", "text": "cancel from DRAFT transitions to CANCELLED and has no side effect."},
+    {"id": "F-STT-004", "text": "cancel from SUBMITTED is invalid because SUBMITTED is terminal; state and persisted data remain unchanged."},
+    {"id": "F-STT-005", "text": "archive is not a defined event; an archive request from DRAFT is invalid and leaves state unchanged."},
+    {"id": "F-STT-006", "text": "submit from DRAFT with guard owner=false is invalid and leaves state and persisted data unchanged."}
+  ],
+  "scope": "State-transition design draft only; valid and invalid candidates must retain their stated state and side-effect expectations without execution or approval.",
+  "checks": [
+    {"id": "Q-STT-001", "question": "Provide valid and invalid transition candidates, including target or preserved state and side-effect expectation, as a JSON observation.", "value_type": "JSON"},
+    {"id": "Q-STT-002", "question": "Provide the source fact IDs supporting the invalid candidates as a sorted unique string-set observation.", "value_type": "STRING_SET"}
+  ]
+}

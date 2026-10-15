@@ -1,0 +1,49 @@
+{
+  "task": "TASK-036",
+  "producer": "/root/design_acceptance",
+  "archivist": "/root",
+  "transformation": "UTF-8 text with CRLF normalized to LF; no other content changes",
+  "source_commit": "e619c79",
+  "files": [
+    {
+      "file": "focused-first.txt",
+      "original_sha256": "2dc3dc4ea812d97957e62d11277a295beef24eef547231c2c26b230bc75025e4",
+      "retained_lf_sha256": "f8c90318f7e38fd5318e1610f390a7596286f1cb80ab83efd41d8380e342a252"
+    },
+    {
+      "file": "focused-final.txt",
+      "original_sha256": "b6fc3d4354baecf6c8fa835feedd99f8ef46ca6a0ddf850b2506d349718b0050",
+      "retained_lf_sha256": "820e2713675e106b3331bef580586341f6d341617170d658512b368e21425f83"
+    },
+    {
+      "file": "full-strict.txt",
+      "original_sha256": "efbd7dca2b80ac1915f2a1ca5e0c80c7b844fe98b5f6d745b894dbccb2b0c8bc",
+      "retained_lf_sha256": "a3bef1d3995ed88bd82c94ed950463df9b889353387ff6af29579a066441fb60"
+    },
+    {
+      "file": "wheel-build.txt",
+      "original_sha256": "e3c119f15dc00d2e147400c7459571fe0c6a4627309a9c8aa2dd2c0ca98202da",
+      "retained_lf_sha256": "0730adab479dea3f8c3787a816837fc8581cfbf90026481c65f505f2f6622ede"
+    },
+    {
+      "file": "wheel-install.txt",
+      "original_sha256": "3c47aa345c7f5c7c64ea5233d56afea64e040f6c133926627192fe9c6dcc84b0",
+      "retained_lf_sha256": "4e242c4744733e7d276a0568e269ad015515132d42a55f4234fb86af45090536"
+    },
+    {
+      "file": "installed-final.txt",
+      "original_sha256": "a630a87d8d6a6d4bdb68f5ee92b2488f3de77623caf6991abce1791285559237",
+      "retained_lf_sha256": "a62a7fca2c6cfc216d3ad474678abd927b409325686c2edbf0cba86942830e4c"
+    },
+    {
+      "file": "installed-wheel-results.json",
+      "original_sha256": "0483acb0748cbddc07d994eb113f682360fca3c19b988817a4068213bc7a78f4",
+      "retained_lf_sha256": "707f1e1fde8469f0f166d296c3843a96ab591c07c310c86e5f6effdb74e656ef"
+    },
+    {
+      "file": "check-installed.py",
+      "original_sha256": "c3b464953e13bbaeb89fc7f0fc5611c16c5901a29343a040c51abb633c16c6b7",
+      "retained_lf_sha256": "7784d208c69e7c72e2549827777b2e012bf0ec805154aa4667198fa541901417"
+    }
+  ]
+}
